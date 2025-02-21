@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Image Color Extractor</title>
+</head>
+<body>
+  <h1>Unique Colors in the Image</h1>
+  <p>Check your browser console to see the unique colors.</p>
+  <!-- Hidden canvas for image processing -->
+  <canvas id="canvas" style="display: none;"></canvas>
+
+  <script>
+    // URL of the image to process.
+    const imageUrl = "https://fortunatemaps.herokuapp.com/png/88685.png";
+
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+
+    const img = new Image();
+    // Ensure cross-origin access so the canvas isn't tainted.
+    img.crossOrigin = "anonymous";
+    img.onload = function() {
+      // Set canvas size to match the image dimensions.
+      canvas.width = img.width;
+      canvas.height = img.height;
+      // Draw the image on the canvas.
+      ctx.drawImage(img, 0, 0);
+
+      // Get pixel data from the canvas.
+      const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      const data = imageData.data;
+      const colors = new Set();
+
+      // Loop through each pixel (each pixel has [r, g, b, a]).
+      for (let i = 0; i < data.length; i += 4) {
+        const r = data[i];
+        const g = data[i + 1];
+        const b = data[i + 2];
+        // Convert RGB to a hex color string.
+        const hex = "#" + [r, g, b]
+          .map(c => c.toString(16).padStart(2, '0'))
+          .join('');
+        colors.add(hex);
+      }
+
+      console.log("Unique colors found:", Array.from(colors));
+    };
+
+    // Start loading the image.
+    img.src = imageUrl;
+  </script>
+</body>
+</html>
